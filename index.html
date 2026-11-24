@@ -626,7 +626,7 @@
 
     .fc-card {
       width: 100%;
-      max-width: 450px;
+      max-width: 470px;
       max-height: 90vh;
       overflow-y: auto;
       border-radius: 18px;
@@ -778,6 +778,40 @@
 
     .fc-close-btn:hover {
       background: rgba(15, 23, 42, 0.14);
+    }
+
+    .fc-photo-lab {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.03);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .fc-photo-lab-title {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .fc-photo-lab-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .fc-photo-status {
+      font-size: 11px;
+      color: var(--text-sub);
+      font-weight: 600;
     }
 
     .fc-stats-header {
@@ -1161,6 +1195,12 @@
       font-weight: 600;
     }
 
+    .text-input.compact {
+      padding: 6px 8px;
+      font-size: 12px;
+      min-width: 0;
+    }
+
     .text-input::placeholder {
       color: var(--text-muted);
     }
@@ -1270,30 +1310,6 @@
       font-size: 11px;
       font-weight: 700;
       color: var(--text-sub);
-    }
-
-    .venue-badge {
-      display: inline-block;
-      font-size: 10.5px;
-      font-weight: 800;
-      padding: 1px 6px;
-      border-radius: 5px;
-      margin-right: 4px;
-      background: rgba(15, 23, 42, 0.08);
-      color: var(--text-main);
-      border: 1px solid rgba(15, 23, 42, 0.2);
-    }
-
-    .venue-badge.is-away {
-      background: rgba(185, 28, 28, 0.12);
-      color: #991b1b;
-      border: 1px solid rgba(185, 28, 28, 0.35);
-    }
-
-    .side-korea .venue-badge.is-away {
-      background: rgba(29, 78, 216, 0.12);
-      color: #1e3a8a;
-      border: 1px solid rgba(29, 78, 216, 0.35);
     }
 
     .match-flight-btns {
@@ -1992,6 +2008,23 @@
         <button type="button" class="fc-close-btn" id="fcCloseBtn">✕ 닫기</button>
       </div>
 
+      <!-- 로컬 테스트용: URL 직접 입력 / 위키미디어 공용 검색 / 축구 데이터 API 조회 -->
+      <div class="fc-photo-lab">
+        <div class="fc-photo-lab-title">
+          <span>🖼️ 사진 테스트 (URL · 위키미디어 · 축구 API)</span>
+        </div>
+        <div class="fc-photo-lab-row">
+          <input type="text" id="fcPhotoUrlInput" class="text-input compact" placeholder="이미지 URL 직접 입력 또는 검색어" />
+          <button type="button" class="btn-mini" id="fcApplyUrlBtn">URL 적용</button>
+          <button type="button" class="btn-mini" id="fcWikiSearchBtn">위키미디어 조회</button>
+        </div>
+        <div class="fc-photo-lab-row">
+          <input type="password" id="fcFootballApiKeyInput" class="text-input compact" placeholder="API-Football 키 (x-apisports-key)" />
+          <button type="button" class="btn-mini" id="fcFootballApiBtn">축구 API 조회</button>
+        </div>
+        <div class="fc-photo-status" id="fcPhotoStatus">저장 파일 없이 외부 URL/API로 테스트합니다.</div>
+      </div>
+
       <div class="fc-stats-header">
         <span>주요 능력치</span>
         <div class="fc-color-legend">
@@ -2079,6 +2112,31 @@
         url: "https://www.theguardian.com/football/2026/nov/23/david-raya-shoulder-injury-arsenal-surgery-mikel-arteta"
       }
     ];
+
+    const PHOTO_QUERY_HINTS = {
+      "손흥민": "Son Heung-min",
+      "이강인": "Lee Kang-in",
+      "김민재": "Kim Min-jae",
+      "황인범": "Hwang In-beom",
+      "황희찬": "Hwang Hee-chan",
+      "이재성": "Lee Jae-sung",
+      "조현우": "Jo Hyeon-woo",
+      "오세훈": "Oh Se-hun",
+      "부카요 사카": "Bukayo Saka",
+      "마르틴 외데고르": "Martin Odegaard",
+      "윌리엄 살리바": "William Saliba",
+      "가브리엘 마갈량이스": "Gabriel Magalhaes",
+      "데클란 라이스": "Declan Rice",
+      "다비드 라야": "David Raya",
+      "카이 하베르츠": "Kai Havertz",
+      "에베레치 에제": "Eberechi Eze",
+      "노니 마두에케": "Noni Madueke",
+      "빅토르 요케레스": "Viktor Gyokeres",
+      "브루노 기마랑이스": "Bruno Guimaraes",
+      "마르틴 수비멘디": "Martin Zubimendi",
+      "미켈 아르테타": "Mikel Arteta",
+      "로베르토 모레노": "Robert Moreno"
+    };
 
     function getStatColor(val) {
       const n = Number(val) || 0;
@@ -2392,7 +2450,10 @@
       rookieFavs: ["r01", "r02", "r03", "r04"],
       rookieOnlyFav: false,
       radarA: "김민재",
-      radarB: "윌리엄 살리바"
+      radarB: "윌리엄 살리바",
+      activeModalProfile: null,
+      photoCache: {},
+      footballApiKey: ""
     };
 
     function statusBadge(status) {
@@ -3038,23 +3099,117 @@
       if (el) el.textContent = text;
     }
 
+    function applyModalImageUrl(url, statusText) {
+      const img = document.getElementById("fcPhoto");
+      const fallbackEl = document.getElementById("fcPhotoFallback");
+      const profile = state.activeModalProfile;
+      if (!img || !fallbackEl || !profile) return;
+
+      fallbackEl.textContent = (profile.name || "FC").slice(0, 2);
+
+      if (!url) {
+        img.removeAttribute("src");
+        img.style.display = "none";
+        fallbackEl.style.display = "block";
+        setTextSafe("fcPhotoStatus", statusText || "사진 URL이 없어 이니셜로 표시 중입니다.");
+        return;
+      }
+
+      img.alt = `${profile.name || "선수"} 프로필 사진`;
+      img.style.display = "block";
+      fallbackEl.style.display = "none";
+
+      img.onerror = () => {
+        img.style.display = "none";
+        fallbackEl.style.display = "block";
+        setTextSafe("fcPhotoStatus", "이미지를 불러오지 못해 이니셜로 대체했습니다. (URL·핫링크·서버 환경 확인)");
+      };
+
+      img.onload = () => {
+        setTextSafe("fcPhotoStatus", statusText || "외부 이미지를 불러왔습니다.");
+      };
+
+      img.src = url;
+    }
+
+    async function fetchPhotoFromWikimedia(queryText) {
+      const q = String(queryText || "").trim();
+      if (!q) return null;
+      const cacheKey = `wiki:${q}`;
+      if (state.photoCache[cacheKey]) return state.photoCache[cacheKey];
+
+      const endpoint = `https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrnamespace=6&gsrlimit=5&gsrsearch=${encodeURIComponent(q)}&prop=imageinfo&iiprop=url|thumbmime&iiurlwidth=240`;
+      const res = await fetch(endpoint);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const pages = data && data.query && data.query.pages ? Object.values(data.query.pages) : [];
+
+      for (const p of pages) {
+        const info = p && p.imageinfo && p.imageinfo[0];
+        const candidate = info && (info.thumburl || info.url);
+        if (candidate && /\.(jpe?g|png|webp)/i.test(candidate)) {
+          state.photoCache[cacheKey] = candidate;
+          return candidate;
+        }
+      }
+      return null;
+    }
+
+    async function fetchPhotoFromFootballApi(playerName, apiKey) {
+      const key = String(apiKey || "").trim();
+      const q = String(playerName || "").trim();
+      if (!key) throw new Error("API-Football 키를 먼저 입력하세요.");
+      if (!q) throw new Error("검색할 선수 이름이 없습니다.");
+
+      const cacheKey = `apifb:${q}`;
+      if (state.photoCache[cacheKey]) return state.photoCache[cacheKey];
+
+      const url = `https://v3.football.api-sports.io/players?search=${encodeURIComponent(q)}`;
+      const res = await fetch(url, {
+        headers: {
+          "x-apisports-key": key
+        }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const first = data && Array.isArray(data.response) && data.response[0];
+      const photoUrl = first && first.player && first.player.photo;
+      if (photoUrl) {
+        state.photoCache[cacheKey] = photoUrl;
+        return photoUrl;
+      }
+      return null;
+    }
+
     function openProfileModal(profile) {
       const modal = document.getElementById("playerModal");
       if (!modal || !profile) return;
+
+      state.activeModalProfile = profile;
 
       setTextSafe("fcName", profile.name || "선수");
       setTextSafe("fcClubBadge", profile.club || "소속팀 정보 없음");
       setTextSafe("fcOvr", String(profile.ovr ?? "-"));
       setTextSafe("fcPos", profile.pos || "-");
 
-      const fallbackEl = document.getElementById("fcPhotoFallback");
-      if (fallbackEl) {
-        fallbackEl.textContent = (profile.name || "FC").slice(0, 2);
-        fallbackEl.style.display = "block";
+      const hintQuery = PHOTO_QUERY_HINTS[profile.name] || profile.name || "";
+      const urlInput = document.getElementById("fcPhotoUrlInput");
+      if (urlInput) {
+        urlInput.value = profile.photoUrl || hintQuery;
       }
 
-      const img = document.getElementById("fcPhoto");
-      if (img) img.style.display = "none";
+      const apiKeyInput = document.getElementById("fcFootballApiKeyInput");
+      if (apiKeyInput && state.footballApiKey) {
+        apiKeyInput.value = state.footballApiKey;
+      }
+
+      const cachedDirect = state.photoCache[`direct:${profile.name}`] || profile.photoUrl || "";
+      applyModalImageUrl(
+        cachedDirect,
+        cachedDirect
+          ? "저장된/지정된 URL로 이미지를 표시합니다."
+          : "URL 적용, 위키미디어 조회, 또는 축구 API 조회를 눌러 테스트하세요."
+      );
 
       const physRow = document.getElementById("fcPhysRow");
       if (physRow) {
@@ -3112,6 +3267,78 @@
       if (!modal) return;
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
+    }
+
+    const applyUrlBtn = document.getElementById("fcApplyUrlBtn");
+    if (applyUrlBtn) {
+      applyUrlBtn.addEventListener("click", () => {
+        const input = document.getElementById("fcPhotoUrlInput");
+        const val = input ? input.value.trim() : "";
+        if (state.activeModalProfile) {
+          state.activeModalProfile.photoUrl = val;
+          state.photoCache[`direct:${state.activeModalProfile.name}`] = val;
+        }
+        applyModalImageUrl(val, val ? "입력한 URL로 이미지를 불러옵니다." : "URL을 비워 이니셜로 되돌렸습니다.");
+      });
+    }
+
+    const wikiBtn = document.getElementById("fcWikiSearchBtn");
+    if (wikiBtn) {
+      wikiBtn.addEventListener("click", async () => {
+        const input = document.getElementById("fcPhotoUrlInput");
+        const profile = state.activeModalProfile;
+        const query = (input && input.value.trim())
+          || (profile && (PHOTO_QUERY_HINTS[profile.name] || profile.name))
+          || "";
+        setTextSafe("fcPhotoStatus", `위키미디어 공용 검색 중: ${query}...`);
+        try {
+          const foundUrl = await fetchPhotoFromWikimedia(query);
+          if (foundUrl) {
+            if (input) input.value = foundUrl;
+            if (profile) {
+              profile.photoUrl = foundUrl;
+              state.photoCache[`direct:${profile.name}`] = foundUrl;
+            }
+            applyModalImageUrl(foundUrl, "위키미디어 공용 이미지를 불러왔습니다.");
+          } else {
+            setTextSafe("fcPhotoStatus", "위키미디어 공용에서 일치하는 이미지를 찾지 못했습니다.");
+          }
+        } catch (err) {
+          setTextSafe("fcPhotoStatus", `위키미디어 조회 오류: ${err.message}`);
+        }
+      });
+    }
+
+    const fbApiBtn = document.getElementById("fcFootballApiBtn");
+    if (fbApiBtn) {
+      fbApiBtn.addEventListener("click", async () => {
+        const keyInput = document.getElementById("fcFootballApiKeyInput");
+        const urlInput = document.getElementById("fcPhotoUrlInput");
+        const profile = state.activeModalProfile;
+        const key = keyInput ? keyInput.value.trim() : "";
+        state.footballApiKey = key;
+
+        const searchName = (profile && (PHOTO_QUERY_HINTS[profile.name] || profile.name))
+          || (urlInput && urlInput.value.trim())
+          || "";
+
+        setTextSafe("fcPhotoStatus", `축구 데이터 API 조회 중: ${searchName}...`);
+        try {
+          const foundUrl = await fetchPhotoFromFootballApi(searchName, key);
+          if (foundUrl) {
+            if (urlInput) urlInput.value = foundUrl;
+            if (profile) {
+              profile.photoUrl = foundUrl;
+              state.photoCache[`direct:${profile.name}`] = foundUrl;
+            }
+            applyModalImageUrl(foundUrl, "축구 데이터 API(player.photo) 이미지를 불러왔습니다.");
+          } else {
+            setTextSafe("fcPhotoStatus", "축구 데이터 API에서 해당 선수 사진을 찾지 못했습니다.");
+          }
+        } catch (err) {
+          setTextSafe("fcPhotoStatus", `축구 API 오류: ${err.message}`);
+        }
+      });
     }
 
     const gossipForm = document.getElementById("arsenalGossipForm");
