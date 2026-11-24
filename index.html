@@ -1543,6 +1543,28 @@
       font-weight: 800;
       text-align: center;
     }
+
+    .arsenal-hub-section {
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-strong);
+    }
+
+    .arsenal-hub-section:first-child {
+      padding-top: 0;
+      border-top: none;
+    }
+
+    .arsenal-hub-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body class="mobile-view-selector">
@@ -1709,22 +1731,6 @@
         </h2>
         <div class="api-status" id="rookieFavSummary">즐겨찾기 0명 · 전체 30명</div>
         <ul class="item-list" id="koreaRookiesList"></ul>
-      </div>
-
-      <div class="card">
-        <h2>
-          <span>🎯 스코어 예측 게임</span>
-          <span class="card-hint-chip" id="koreaPredRate">적중률 -</span>
-        </h2>
-        <div id="koreaPredBox"></div>
-      </div>
-
-      <div class="card">
-        <h2>
-          <span>🧳 직관 여행 플래너 (출국→경기→귀국)</span>
-          <span class="card-hint-chip">실측 기준가 반영</span>
-        </h2>
-        <div id="koreaPlannerBox"></div>
       </div>
     </section>
 
@@ -1896,12 +1902,31 @@
         <ul id="arsenalMemoList" class="item-list"></ul>
       </div>
 
-      <div class="card">
-        <h2>
-          <span>🕸️ 선수 비교 레이더 (50:50 맞대결)</span>
-          <span class="card-hint-chip">6각형 능력치</span>
-        </h2>
-        <div id="playerRadarBox"></div>
+      <!-- 전술·경기 메모 아래 통합 도구 카드: 1) 직관 여행 플래너 -> 2) 스코어 예측 -> 3) 선수 비교 레이더 -->
+      <div class="card" id="arsenalToolsCard">
+        <div class="arsenal-hub-section">
+          <div class="arsenal-hub-title">
+            <span>🧳 1. 직관 여행 플래너 (출국→경기→귀국)</span>
+            <span class="card-hint-chip">실측 기준가 반영</span>
+          </div>
+          <div id="arsenalPlannerBox"></div>
+        </div>
+
+        <div class="arsenal-hub-section" style="margin-top: 12px;">
+          <div class="arsenal-hub-title">
+            <span>🎯 2. 스코어 예측 게임</span>
+            <span class="card-hint-chip" id="arsenalPredRate">적중률 -</span>
+          </div>
+          <div id="arsenalPredBox"></div>
+        </div>
+
+        <div class="arsenal-hub-section" style="margin-top: 12px;">
+          <div class="arsenal-hub-title">
+            <span>🕸️ 3. 선수 비교 레이더 (50:50 맞대결)</span>
+            <span class="card-hint-chip">6각형 능력치</span>
+          </div>
+          <div id="playerRadarBox"></div>
+        </div>
       </div>
     </section>
   </main>
@@ -2271,21 +2296,7 @@
         selectedDate: "2026-11-17",
         matches: [...INITIAL_DATA.korea.matches],
         stats: INITIAL_DATA.korea.stats.map(s => ({ ...s })),
-        memos: [...INITIAL_DATA.korea.memos],
-        predictions: {
-          a_next_1: { home: 2, away: 1 },
-          a_next_2: { home: 2, away: 2 },
-          k_next_1: { home: 2, away: 0 }
-        },
-        selectedPredMatchId: "a_next_1",
-        planner: {
-          matchId: "a_next_1",
-          hotelIdx: 0,
-          flightKrw: 1446700,
-          hotelPerNightKrw: 150123,
-          nights: 5,
-          ticketKrw: 180000
-        }
+        memos: [...INITIAL_DATA.korea.memos]
       },
       arsenal: {
         tab: "roster",
@@ -2595,13 +2606,13 @@
       return [...arsenalMatches, ...koreaMatches];
     }
 
-    function renderPredictions(side) {
-      const box = document.getElementById(`${side}PredBox`);
-      const rateBadge = document.getElementById(`${side}PredRate`);
+    function renderArsenalPredictions() {
+      const box = document.getElementById("arsenalPredBox");
+      const rateBadge = document.getElementById("arsenalPredRate");
       if (!box || !rateBadge) return;
 
       const allMatches = getAllPlannerMatches();
-      const preds = state[side].predictions;
+      const preds = state.arsenal.predictions;
 
       let finishedCount = 0;
       let hitCount = 0;
@@ -2618,13 +2629,13 @@
         ? `적중 ${hitCount}/${finishedCount} (${Math.round((hitCount / finishedCount) * 100)}%)`
         : `저장된 예측 ${Object.keys(preds).length}건`;
 
-      const selectedMatch = allMatches.find(m => m.id === state[side].selectedPredMatchId) || allMatches[0];
+      const selectedMatch = allMatches.find(m => m.id === state.arsenal.selectedPredMatchId) || allMatches[0];
       const p = preds[selectedMatch.id] || { home: 1, away: 0 };
 
       box.innerHTML = `
         <div class="kpi-box" style="margin-bottom:8px;">
-          <span class="kpi-label">예측할 경기 선택 (한국 · 아스날 전체)</span>
-          <select class="result-select" style="width:100%;" onchange="selectPredictionMatch('${side}', this.value)">
+          <span class="kpi-label">예측할 경기 선택 (아스날 · 한국 전체)</span>
+          <select class="result-select" style="width:100%;" onchange="selectPredictionMatch(this.value)">
             ${allMatches.map(m => `<option value="${m.id}" ${m.id === selectedMatch.id ? "selected" : ""}>${m.teamPrefix} ${m.date} · ${m.title}</option>`).join("")}
           </select>
         </div>
@@ -2633,36 +2644,36 @@
             <div style="font-size:12.5px; font-weight:800;">${selectedMatch.teamPrefix} ${selectedMatch.date} · ${selectedMatch.title}</div>
             <div class="pred-score-row">
               <span style="font-size:11.5px; font-weight:700;">홈/팀1</span>
-              <input type="number" min="0" max="20" class="score-num-input" id="pred_${side}_${selectedMatch.id}_h" value="${p.home}" />
+              <input type="number" min="0" max="20" class="score-num-input" id="pred_arsenal_${selectedMatch.id}_h" value="${p.home}" />
               <span style="font-weight:900;">:</span>
               <span style="font-size:11.5px; font-weight:700;">원정/팀2</span>
-              <input type="number" min="0" max="20" class="score-num-input" id="pred_${side}_${selectedMatch.id}_a" value="${p.away}" />
-              <button type="button" class="btn-mini" onclick="savePrediction('${side}', '${selectedMatch.id}')">저장</button>
+              <input type="number" min="0" max="20" class="score-num-input" id="pred_arsenal_${selectedMatch.id}_a" value="${p.away}" />
+              <button type="button" class="btn-mini" onclick="savePrediction('${selectedMatch.id}')">저장</button>
             </div>
           </li>
         </ul>
-        <div class="flight-toast" id="${side}PredToast"></div>
+        <div class="flight-toast" id="arsenalPredToast"></div>
       `;
     }
 
-    window.selectPredictionMatch = function(side, matchId) {
-      state[side].selectedPredMatchId = matchId;
-      renderPredictions(side);
+    window.selectPredictionMatch = function(matchId) {
+      state.arsenal.selectedPredMatchId = matchId;
+      renderArsenalPredictions();
     };
 
-    window.savePrediction = function(side, matchId) {
-      const h = Number(document.getElementById(`pred_${side}_${matchId}_h`).value || 0);
-      const a = Number(document.getElementById(`pred_${side}_${matchId}_a`).value || 0);
-      state[side].predictions[matchId] = { home: h, away: a };
-      renderPredictions(side);
-      const toast = document.getElementById(`${side}PredToast`);
+    window.savePrediction = function(matchId) {
+      const h = Number(document.getElementById(`pred_arsenal_${matchId}_h`).value || 0);
+      const a = Number(document.getElementById(`pred_arsenal_${matchId}_a`).value || 0);
+      state.arsenal.predictions[matchId] = { home: h, away: a };
+      renderArsenalPredictions();
+      const toast = document.getElementById("arsenalPredToast");
       if (toast) toast.textContent = `예측 저장 완료 (${h} : ${a})`;
     };
 
-    function renderPlanner(side) {
-      const box = document.getElementById(`${side}PlannerBox`);
+    function renderArsenalPlanner() {
+      const box = document.getElementById("arsenalPlannerBox");
       if (!box) return;
-      const p = state[side].planner;
+      const p = state.arsenal.planner;
       const matches = getAllPlannerMatches();
       const selectedMatch = matches.find(m => m.id === p.matchId) || matches[0];
       const departDate = shiftDateStr(selectedMatch.date, -3);
@@ -2675,14 +2686,14 @@
       box.innerHTML = `
         <div class="planner-grid">
           <div class="kpi-box">
-            <span class="kpi-label">대상 경기 선택 (한국 · 아스날)</span>
-            <select class="result-select" style="width:100%;" onchange="updatePlanner('${side}', 'matchId', this.value)">
+            <span class="kpi-label">대상 경기 선택 (아스날 · 한국)</span>
+            <select class="result-select" style="width:100%;" onchange="updatePlanner('matchId', this.value)">
               ${matches.map(m => `<option value="${m.id}" ${m.id === selectedMatch.id ? "selected" : ""}>${m.teamPrefix} ${m.date} · ${m.title}</option>`).join("")}
             </select>
           </div>
           <div class="kpi-box">
             <span class="kpi-label">에미레이츠 주변 숙소</span>
-            <select class="result-select" style="width:100%;" onchange="onPlannerHotelChange('${side}', this.value)">
+            <select class="result-select" style="width:100%;" onchange="onPlannerHotelChange(this.value)">
               ${HOTELS_NEAR_EMIRATES.map((h, idx) => `<option value="${idx}" ${idx === Number(p.hotelIdx) ? "selected" : ""}>${h.name} (${formatKrw(h.estKrw)}/박)</option>`).join("")}
             </select>
           </div>
@@ -2690,18 +2701,18 @@
         <div class="planner-budget-grid">
           <div class="kpi-box">
             <span class="kpi-label">항공권 (원 · 왕복 기준)</span>
-            <input type="number" class="text-input" value="${p.flightKrw}" onchange="updatePlanner('${side}', 'flightKrw', Number(this.value))" />
+            <input type="number" class="text-input" value="${p.flightKrw}" onchange="updatePlanner('flightKrw', Number(this.value))" />
           </div>
           <div class="kpi-box">
             <span class="kpi-label">숙박 1박(원) × 박수</span>
             <div style="display:flex; gap:4px;">
-              <input type="number" class="text-input" value="${p.hotelPerNightKrw}" onchange="updatePlanner('${side}', 'hotelPerNightKrw', Number(this.value))" />
-              <input type="number" min="1" max="30" class="score-num-input" value="${p.nights}" onchange="updatePlanner('${side}', 'nights', Number(this.value))" />
+              <input type="number" class="text-input" value="${p.hotelPerNightKrw}" onchange="updatePlanner('hotelPerNightKrw', Number(this.value))" />
+              <input type="number" min="1" max="30" class="score-num-input" value="${p.nights}" onchange="updatePlanner('nights', Number(this.value))" />
             </div>
           </div>
           <div class="kpi-box">
             <span class="kpi-label">경기 티켓 (원)</span>
-            <input type="number" class="text-input" value="${p.ticketKrw}" onchange="updatePlanner('${side}', 'ticketKrw', Number(this.value))" />
+            <input type="number" class="text-input" value="${p.ticketKrw}" onchange="updatePlanner('ticketKrw', Number(this.value))" />
           </div>
         </div>
         <div class="planner-summary">
@@ -2714,18 +2725,18 @@
       `;
     }
 
-    window.updatePlanner = function(side, key, val) {
-      state[side].planner[key] = val;
-      renderPlanner(side);
+    window.updatePlanner = function(key, val) {
+      state.arsenal.planner[key] = val;
+      renderArsenalPlanner();
     };
 
-    window.onPlannerHotelChange = function(side, idxStr) {
+    window.onPlannerHotelChange = function(idxStr) {
       const idx = Number(idxStr);
-      state[side].planner.hotelIdx = idx;
+      state.arsenal.planner.hotelIdx = idx;
       if (HOTELS_NEAR_EMIRATES[idx]) {
-        state[side].planner.hotelPerNightKrw = HOTELS_NEAR_EMIRATES[idx].estKrw;
+        state.arsenal.planner.hotelPerNightKrw = HOTELS_NEAR_EMIRATES[idx].estKrw;
       }
-      renderPlanner(side);
+      renderArsenalPlanner();
     };
 
     function renderRookies() {
@@ -3030,10 +3041,11 @@
           renderRecordBar(side);
           renderMatches(side);
           renderCalendar(side);
-          renderPredictions("korea");
-          renderPlanner("korea");
+          renderArsenalPlanner();
+          renderArsenalPredictions();
+          renderPlayerRadar();
           updateCountdowns();
-          setTextSafe(`${side}ApiStatus`, "달력, 경기 필터, 예측 및 여행 플래너가 동기화되었습니다.");
+          setTextSafe(`${side}ApiStatus`, "달력, 경기 필터, 아스날 플래너·예측·레이더가 동기화되었습니다.");
         });
       }
 
@@ -3087,8 +3099,8 @@
       renderMemos(side);
     });
 
-    renderPredictions("korea");
-    renderPlanner("korea");
+    renderArsenalPlanner();
+    renderArsenalPredictions();
 
     const rookieFilterBtn = document.getElementById("rookieFavFilterBtn");
     if (rookieFilterBtn) {
