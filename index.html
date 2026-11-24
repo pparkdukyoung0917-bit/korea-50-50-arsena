@@ -1113,6 +1113,25 @@
       white-space: nowrap;
     }
 
+    .gossip-badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 5px;
+      margin-right: 6px;
+      background: rgba(185, 28, 28, 0.12);
+      color: #991b1b;
+      border: 1px solid rgba(185, 28, 28, 0.3);
+      white-space: nowrap;
+    }
+
+    .gossip-badge.injury {
+      background: rgba(180, 83, 9, 0.14);
+      color: #92400e;
+      border-color: rgba(180, 83, 9, 0.35);
+    }
+
     .row-form {
       display: flex;
       gap: 8px;
@@ -1796,6 +1815,25 @@
         <ul id="arsenalStatList" class="item-list"></ul>
       </div>
 
+      <!-- 아스날 뉴스 · 일정 · 티켓 박스 바로 위: 이적설 · 가십 · 선수 소식 -->
+      <div class="card" id="arsenalGossipCard">
+        <h2>
+          <span>🔥 이적설 · 가십 · 선수 소식</span>
+          <span class="card-hint-chip">2026년 11월 이슈</span>
+        </h2>
+        <div class="filter-bar" id="arsenalGossipFilterBar"></div>
+        <form class="row-form" id="arsenalGossipForm">
+          <select id="arsenalGossipTag" class="result-select">
+            <option value="이적루머">이적루머</option>
+            <option value="가십/찌라시">가십/찌라시</option>
+            <option value="부상/스쿼드">부상/스쿼드</option>
+          </select>
+          <input type="text" id="arsenalGossipInput" class="text-input" placeholder="이적 링크, 찌라시, 선수 근황 등 메모 추가" required />
+          <button type="submit" class="btn-add">추가</button>
+        </form>
+        <ul class="item-list" id="arsenalGossipList"></ul>
+      </div>
+
       <div class="card">
         <h2>아스날 뉴스 · 일정 · 티켓</h2>
         <div class="link-grid">
@@ -2013,6 +2051,33 @@
       { name: "Best Western London Highbury", note: "하이베리 방면 · 약 1.0mi", estKrw: 210000 },
       { name: "City Prime Camden", note: "캠든/이스링턴 · 약 0.7mi", estKrw: 290000 },
       { name: "Premier Inn London Angel Islington", note: "엔젤 이스링턴역 · 약 1.3mi", estKrw: 190000 }
+    ];
+
+    const INITIAL_ARSENAL_GOSSIP = [
+      {
+        id: "ag1",
+        tag: "이적루머",
+        text: "RB 라이프치히 윙어 안토니오 누사 영입설 — 이안 라이트 공개 추천 및 고액 이적료 거론",
+        url: "https://www.football365.com/news/arsenal-antonio-nusa-reaches-decision-join-huge-january-transfer"
+      },
+      {
+        id: "ag2",
+        tag: "이적루머",
+        text: "본머스 공격수 엘리 주니어 크루피 관심 루머 — 1월 매각 난항 관측 속 중장기 주시",
+        url: "https://rumourleague.com/?team=arsenal"
+      },
+      {
+        id: "ag3",
+        tag: "가십/찌라시",
+        text: "알렉스 스콧 영입 경쟁 찌라시 — PL 라이벌 구단들과 이름 오르내리는 단계",
+        url: "https://rumourleague.com/?team=arsenal"
+      },
+      {
+        id: "ag4",
+        tag: "부상/스쿼드",
+        text: "다비드 라야 어깨 부상 수술 불필요·경미 소식 · 부카요 사카 복귀 시점 & 마르틴 수비멘디 햄스트링 이탈 체크",
+        url: "https://www.theguardian.com/football/2026/nov/23/david-raya-shoulder-injury-arsenal-surgery-mikel-arteta"
+      }
     ];
 
     function getStatColor(val) {
@@ -2307,6 +2372,8 @@
         matches: [...INITIAL_DATA.arsenal.matches],
         stats: INITIAL_DATA.arsenal.stats.map(s => ({ ...s })),
         memos: [...INITIAL_DATA.arsenal.memos],
+        gossipFilter: "전체",
+        gossipItems: [...INITIAL_ARSENAL_GOSSIP],
         predictions: {
           a_next_1: { home: 2, away: 1 },
           a_next_2: { home: 2, away: 2 },
@@ -2472,6 +2539,59 @@
     window.adjustStat = function(side, idx, field) {
       state[side].stats[idx][field] += 1;
       renderStats(side);
+    };
+
+    function renderArsenalGossip() {
+      const filterBar = document.getElementById("arsenalGossipFilterBar");
+      const listEl = document.getElementById("arsenalGossipList");
+      if (!filterBar || !listEl) return;
+
+      const tags = ["전체", "이적루머", "가십/찌라시", "부상/스쿼드"];
+      if (!tags.includes(state.arsenal.gossipFilter)) {
+        state.arsenal.gossipFilter = "전체";
+      }
+
+      filterBar.innerHTML = tags.map(t => `
+        <button type="button" class="filter-btn ${state.arsenal.gossipFilter === t ? "active" : ""}" onclick="setArsenalGossipFilter('${t}')">${t}</button>
+      `).join("");
+
+      const rows = state.arsenal.gossipFilter === "전체"
+        ? state.arsenal.gossipItems
+        : state.arsenal.gossipItems.filter(item => item.tag === state.arsenal.gossipFilter);
+
+      if (rows.length === 0) {
+        listEl.innerHTML = `<li class="list-row" style="color:var(--text-muted);">선택한 분류의 소식이 없습니다.</li>`;
+        return;
+      }
+
+      listEl.innerHTML = rows.map(item => {
+        const badgeClass = item.tag === "부상/스쿼드" ? "gossip-badge injury" : "gossip-badge";
+        const linkHtml = item.url
+          ? `<a class="hotel-link" href="${item.url}" target="_blank" rel="noopener noreferrer">출처 ↗</a>`
+          : "";
+        return `
+          <li class="list-row">
+            <div>
+              <span class="${badgeClass}">${item.tag}</span>
+              <span>${item.text}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+              ${linkHtml}
+              <button type="button" class="btn-del" onclick="deleteArsenalGossip('${item.id}')">✕</button>
+            </div>
+          </li>
+        `;
+      }).join("");
+    }
+
+    window.setArsenalGossipFilter = function(tag) {
+      state.arsenal.gossipFilter = tag;
+      renderArsenalGossip();
+    };
+
+    window.deleteArsenalGossip = function(id) {
+      state.arsenal.gossipItems = state.arsenal.gossipItems.filter(item => item.id !== id);
+      renderArsenalGossip();
     };
 
     function renderMatches(side) {
@@ -2994,6 +3114,30 @@
       modal.setAttribute("aria-hidden", "true");
     }
 
+    const gossipForm = document.getElementById("arsenalGossipForm");
+    if (gossipForm) {
+      gossipForm.addEventListener("submit", e => {
+        e.preventDefault();
+        const tag = document.getElementById("arsenalGossipTag").value;
+        const input = document.getElementById("arsenalGossipInput");
+        const raw = input.value.trim();
+        if (!raw) return;
+
+        const urlMatch = raw.match(/https?:\/\/\S+/);
+        const url = urlMatch ? urlMatch[0] : "";
+        const text = url ? raw.replace(url, "").trim() || url : raw;
+
+        state.arsenal.gossipItems.unshift({
+          id: `ag-${Date.now()}`,
+          tag,
+          text,
+          url
+        });
+        input.value = "";
+        renderArsenalGossip();
+      });
+    }
+
     ["korea", "arsenal"].forEach(side => {
       const toggleBtn = document.getElementById(`${side}SquadToggle`);
       const bodyEl = document.getElementById(`${side}SquadBody`);
@@ -3041,11 +3185,12 @@
           renderRecordBar(side);
           renderMatches(side);
           renderCalendar(side);
+          renderArsenalGossip();
           renderArsenalPlanner();
           renderArsenalPredictions();
           renderPlayerRadar();
           updateCountdowns();
-          setTextSafe(`${side}ApiStatus`, "달력, 경기 필터, 아스날 플래너·예측·레이더가 동기화되었습니다.");
+          setTextSafe(`${side}ApiStatus`, "달력, 경기 필터, 이적·가십, 아스날 플래너·예측·레이더가 동기화되었습니다.");
         });
       }
 
@@ -3099,6 +3244,7 @@
       renderMemos(side);
     });
 
+    renderArsenalGossip();
     renderArsenalPlanner();
     renderArsenalPredictions();
 
