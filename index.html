@@ -177,6 +177,10 @@
       }
       .team-switch-btn {
         flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
         font: inherit;
         font-size: 15px;
         font-weight: 800;
@@ -187,6 +191,13 @@
         cursor: pointer;
         border-radius: 10px;
         transition: background 0.15s, color 0.15s, border-color 0.15s;
+      }
+      .team-switch-logo {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+        flex-shrink: 0;
+        display: block;
       }
       .team-switch-btn + .team-switch-btn {
         margin-left: 8px;
@@ -1884,8 +1895,14 @@
 
   <!-- 모바일 전용: 한국 / 아스날 전환 탭 -->
   <nav class="team-switch" id="teamSwitch" aria-label="팀 선택">
-    <button type="button" class="team-switch-btn korea active" data-team="korea" aria-pressed="true">🇰🇷 국가대표</button>
-    <button type="button" class="team-switch-btn arsenal" data-team="arsenal" aria-pressed="false">🔴 아스날</button>
+    <button type="button" class="team-switch-btn korea active" data-team="korea" aria-pressed="true">
+      <img class="team-switch-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Korea_Football_Association_logo.svg/120px-Korea_Football_Association_logo.svg.png" alt="" width="22" height="22" />
+      국가대표
+    </button>
+    <button type="button" class="team-switch-btn arsenal" data-team="arsenal" aria-pressed="false">
+      <img class="team-switch-logo" src="https://ssl.gstatic.com/onebox/media/sports/logos/optimized/4us2nCgl6kgZc0t3hpW75Q_500x500.png" alt="" width="22" height="22" />
+      아스날
+    </button>
   </nav>
 
   <main class="split-page">
