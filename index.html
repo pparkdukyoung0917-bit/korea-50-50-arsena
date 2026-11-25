@@ -1872,6 +1872,7 @@
 
       <div class="card acc-cmp">
         <h2><span>📊 선수 비교 · 레이더</span></h2>
+        <p class="xi-hint" style="margin-bottom:8px">국가대표 · 아스날 · 도르트문트 · 맨시티 · 브렌트퍼드 선수를 서로 비교할 수 있습니다. (GK끼리 / 필드 선수끼리)</p>
         <label class="fx-label" for="koreaCmpA">선수 A</label>
         <select class="fx-select" id="koreaCmpA"></select>
         <label class="fx-label" for="koreaCmpB">선수 B (같은 유형끼리 비교)</label>
@@ -2035,6 +2036,7 @@
 
       <div class="card acc-cmp">
         <h2><span>📊 선수 비교 · 레이더</span></h2>
+        <p class="xi-hint" style="margin-bottom:8px">국가대표 · 아스날 · 도르트문트 · 맨시티 · 브렌트퍼드 선수를 서로 비교할 수 있습니다. (GK끼리 / 필드 선수끼리)</p>
         <label class="fx-label" for="arsenalCmpA">선수 A</label>
         <select class="fx-select" id="arsenalCmpA"></select>
         <label class="fx-label" for="arsenalCmpB">선수 B (같은 유형끼리 비교)</label>
@@ -2581,6 +2583,57 @@
     };
     const OPP_KEYS = [["도르트문트","dortmund"],["맨체스터 시티","city"],["브렌트퍼드","brentford"]];
     const SLOT_X = { 1:[50], 2:[36,64], 3:[20,50,80], 4:[13,38,62,87], 5:[10,30,50,70,90] };
+
+    /* ===== 선수 비교용 상대팀 스쿼드 (자체 게임식 수치 · 공식 기록 아님) ===== */
+    const TEAM_LABEL = {
+      korea: "국가대표",
+      arsenal: "아스날",
+      dortmund: "도르트문트",
+      city: "맨체스터 시티",
+      brentford: "브렌트퍼드"
+    };
+    const EXTRA_SQUAD = {
+      // 각 팀 예상 라인업 11명 전원 (LINEUPS 기준)
+      dortmund: [
+        { pos: "GK", name: "코벨", club: "도르트문트", ovr: 86, height: "195cm", foot: "오른발", stats: { DIV: 87, HAN: 84, KIC: 80, REF: 88, SPD: 48, POS: 85 } },
+        { pos: "DF", name: "슐로터베크", club: "도르트문트", ovr: 84, height: "191cm", foot: "왼발", stats: { PAC: 76, SHO: 58, PAS: 78, DRI: 72, DEF: 86, PHY: 84 } },
+        { pos: "DF", name: "안톤", club: "도르트문트", ovr: 81, height: "189cm", foot: "오른발", stats: { PAC: 74, SHO: 48, PAS: 76, DRI: 70, DEF: 83, PHY: 82 } },
+        { pos: "DF", name: "벤세바이니", club: "도르트문트", ovr: 80, height: "187cm", foot: "왼발", stats: { PAC: 78, SHO: 55, PAS: 74, DRI: 73, DEF: 81, PHY: 83 } },
+        { pos: "MF", name: "라이어슨", club: "도르트문트", ovr: 76, height: "175cm", foot: "오른발", stats: { PAC: 84, SHO: 62, PAS: 74, DRI: 78, DEF: 70, PHY: 68 } },
+        { pos: "MF", name: "은메차", club: "도르트문트", ovr: 80, height: "185cm", foot: "오른발", stats: { PAC: 74, SHO: 76, PAS: 75, DRI: 74, DEF: 72, PHY: 82 } },
+        { pos: "MF", name: "조브 벨링엄", club: "도르트문트", ovr: 78, height: "186cm", foot: "오른발", stats: { PAC: 77, SHO: 70, PAS: 76, DRI: 78, DEF: 68, PHY: 75 } },
+        { pos: "MF", name: "스벤손", club: "도르트문트", ovr: 75, height: "178cm", foot: "왼발", stats: { PAC: 80, SHO: 58, PAS: 72, DRI: 76, DEF: 72, PHY: 70 } },
+        { pos: "MF", name: "카레차스", club: "도르트문트", ovr: 77, height: "180cm", foot: "오른발", stats: { PAC: 78, SHO: 72, PAS: 76, DRI: 80, DEF: 48, PHY: 72 } },
+        { pos: "MF", name: "바이어", club: "도르트문트", ovr: 79, height: "183cm", foot: "오른발", stats: { PAC: 82, SHO: 78, PAS: 72, DRI: 80, DEF: 42, PHY: 74 } },
+        { pos: "FW", name: "파비우 실바", club: "도르트문트", ovr: 77, height: "185cm", foot: "오른발", stats: { PAC: 78, SHO: 79, PAS: 68, DRI: 76, DEF: 38, PHY: 76 } }
+      ],
+      city: [
+        { pos: "GK", name: "돈나룸마", club: "맨체스터 시티", ovr: 89, height: "196cm", foot: "오른발", stats: { DIV: 90, HAN: 86, KIC: 82, REF: 91, SPD: 55, POS: 87 } },
+        { pos: "DF", name: "쿠사노프", club: "맨체스터 시티", ovr: 76, height: "180cm", foot: "오른발", stats: { PAC: 82, SHO: 48, PAS: 74, DRI: 76, DEF: 74, PHY: 72 } },
+        { pos: "DF", name: "디아스", club: "맨체스터 시티", ovr: 88, height: "188cm", foot: "왼발", stats: { PAC: 72, SHO: 48, PAS: 80, DRI: 74, DEF: 90, PHY: 86 } },
+        { pos: "DF", name: "귀히", club: "맨체스터 시티", ovr: 80, height: "192cm", foot: "오른발", stats: { PAC: 74, SHO: 45, PAS: 74, DRI: 70, DEF: 82, PHY: 84 } },
+        { pos: "DF", name: "그바르디올", club: "맨체스터 시티", ovr: 86, height: "185cm", foot: "왼발", stats: { PAC: 80, SHO: 62, PAS: 82, DRI: 80, DEF: 84, PHY: 85 } },
+        { pos: "MF", name: "앤더슨", club: "맨체스터 시티", ovr: 78, height: "180cm", foot: "오른발", stats: { PAC: 74, SHO: 68, PAS: 80, DRI: 76, DEF: 74, PHY: 76 } },
+        { pos: "MF", name: "페르난데스", club: "맨체스터 시티", ovr: 82, height: "178cm", foot: "오른발", stats: { PAC: 76, SHO: 70, PAS: 84, DRI: 80, DEF: 78, PHY: 76 } },
+        { pos: "FW", name: "도쿠", club: "맨체스터 시티", ovr: 84, height: "173cm", foot: "오른발", stats: { PAC: 94, SHO: 76, PAS: 76, DRI: 88, DEF: 40, PHY: 72 } },
+        { pos: "MF", name: "포든", club: "맨체스터 시티", ovr: 88, height: "171cm", foot: "왼발", stats: { PAC: 84, SHO: 84, PAS: 86, DRI: 90, DEF: 52, PHY: 68 } },
+        { pos: "FW", name: "셰르키", club: "맨체스터 시티", ovr: 82, height: "176cm", foot: "오른발", stats: { PAC: 82, SHO: 78, PAS: 84, DRI: 86, DEF: 42, PHY: 68 } },
+        { pos: "FW", name: "홀란", club: "맨체스터 시티", ovr: 91, height: "194cm", foot: "왼발", stats: { PAC: 89, SHO: 94, PAS: 68, DRI: 80, DEF: 45, PHY: 88 } }
+      ],
+      brentford: [
+        { pos: "GK", name: "켈러허", club: "브렌트퍼드", ovr: 80, height: "188cm", foot: "오른발", stats: { DIV: 82, HAN: 78, KIC: 76, REF: 83, SPD: 50, POS: 80 } },
+        { pos: "DF", name: "케이오데", club: "브렌트퍼드", ovr: 76, height: "178cm", foot: "오른발", stats: { PAC: 78, SHO: 48, PAS: 72, DRI: 74, DEF: 76, PHY: 74 } },
+        { pos: "DF", name: "판덴베르흐", club: "브렌트퍼드", ovr: 78, height: "189cm", foot: "오른발", stats: { PAC: 72, SHO: 40, PAS: 70, DRI: 68, DEF: 80, PHY: 82 } },
+        { pos: "DF", name: "아예르", club: "브렌트퍼드", ovr: 79, height: "196cm", foot: "오른발", stats: { PAC: 68, SHO: 42, PAS: 72, DRI: 66, DEF: 82, PHY: 86 } },
+        { pos: "DF", name: "루이스-포터", club: "브렌트퍼드", ovr: 75, height: "183cm", foot: "왼발", stats: { PAC: 76, SHO: 52, PAS: 74, DRI: 74, DEF: 74, PHY: 72 } },
+        { pos: "MF", name: "얀트", club: "브렌트퍼드", ovr: 77, height: "184cm", foot: "오른발", stats: { PAC: 70, SHO: 66, PAS: 78, DRI: 74, DEF: 76, PHY: 78 } },
+        { pos: "MF", name: "상가레", club: "브렌트퍼드", ovr: 76, height: "188cm", foot: "오른발", stats: { PAC: 68, SHO: 58, PAS: 72, DRI: 70, DEF: 78, PHY: 82 } },
+        { pos: "FW", name: "우아타라", club: "브렌트퍼드", ovr: 75, height: "176cm", foot: "오른발", stats: { PAC: 86, SHO: 72, PAS: 68, DRI: 80, DEF: 38, PHY: 70 } },
+        { pos: "MF", name: "옌센", club: "브렌트퍼드", ovr: 78, height: "180cm", foot: "오른발", stats: { PAC: 72, SHO: 72, PAS: 80, DRI: 76, DEF: 70, PHY: 74 } },
+        { pos: "FW", name: "샤데", club: "브렌트퍼드", ovr: 79, height: "185cm", foot: "오른발", stats: { PAC: 84, SHO: 78, PAS: 70, DRI: 80, DEF: 42, PHY: 76 } },
+        { pos: "FW", name: "윌슨", club: "브렌트퍼드", ovr: 81, height: "180cm", foot: "오른발", stats: { PAC: 80, SHO: 82, PAS: 72, DRI: 78, DEF: 40, PHY: 78 } }
+      ]
+    };
 
     function posCls(pos) { return "pos-" + (["GK","DF","MF","FW"].includes(pos) ? pos : "X"); }
     function isCap(side, name) { return !!side && CAPTAIN[side] === name; }
@@ -3242,8 +3295,29 @@
 
     /* ===== 선수 비교 ===== */
     const CMP_COLORS = ["#7c3aed", "#ea580c"];
+    const CMP_SIDES = ["korea", "arsenal", "dortmund", "city", "brentford"];
     function cmpPool() {
-      return ["korea", "arsenal"].flatMap(side => (INITIAL_DATA[side].squad.roster || []).filter(p => p.stats).map(p => ({ ...p, side, key: side + "|" + p.name, gk: "DIV" in p.stats })));
+      const fromMain = ["korea", "arsenal"].flatMap(side =>
+        (INITIAL_DATA[side].squad.roster || []).filter(p => p.stats).map(p => ({
+          ...p, side, key: side + "|" + p.name, gk: "DIV" in p.stats
+        }))
+      );
+      const fromExtra = Object.entries(EXTRA_SQUAD).flatMap(([side, list]) =>
+        list.filter(p => p.stats).map(p => ({
+          ...p, side, key: side + "|" + p.name, gk: "DIV" in p.stats,
+          club: p.club || TEAM_LABEL[side]
+        }))
+      );
+      return fromMain.concat(fromExtra);
+    }
+    function cmpOptgroups(players) {
+      return CMP_SIDES.map(sd => {
+        const list = players.filter(p => p.side === sd);
+        if (!list.length) return "";
+        return `<optgroup label="${TEAM_LABEL[sd] || sd}">${list.map(p =>
+          `<option value="${p.key}">${p.pos} ${p.name} (OVR ${p.ovr})</option>`
+        ).join("")}</optgroup>`;
+      }).join("");
     }
     function cmpRadar(a, b) {
       const keys = Object.keys(a.stats), N = keys.length, cx = 160, cy = 150, R = 100, lo = 30;
@@ -3257,15 +3331,17 @@
     function cmpRender(side) {
       const pool = cmpPool();
       const A = pool.find(p => p.key === document.getElementById(side + "CmpA").value);
+      if (!A) return;
       const bSel = document.getElementById(side + "CmpB");
       const opts = pool.filter(p => p.gk === A.gk && p.key !== A.key);
       const prevB = bSel.value;
-      bSel.innerHTML = ["korea", "arsenal"].map(sd => `<optgroup label="${sd === "korea" ? "국가대표" : "아스날"}">${opts.filter(p => p.side === sd).map(p => `<option value="${p.key}">${p.pos} ${p.name} (OVR ${p.ovr})</option>`).join("")}</optgroup>`).join("");
+      bSel.innerHTML = cmpOptgroups(opts);
       if (opts.some(p => p.key === prevB)) bSel.value = prevB;
+      else if (opts[0]) bSel.value = opts[0].key;
       const B = pool.find(p => p.key === bSel.value) || opts[0];
       const out = document.getElementById(side + "CmpOut");
       if (!B) { out.innerHTML = `<div class="fx-empty">비교할 선수가 없습니다.</div>`; return; }
-      const head = (pl, c) => `<div class="cmp-p" style="--c:${c}"><b>${pl.name}</b>${pl.club || ""}<br>${[pl.height, pl.foot].filter(Boolean).join(" · ")}<div class="cmp-ovr" style="color:${statColor(pl.ovr)}">OVR ${pl.ovr}</div></div>`;
+      const head = (pl, c) => `<div class="cmp-p" style="--c:${c}"><b>${pl.name}</b> · ${TEAM_LABEL[pl.side] || pl.club || ""}<br>${[pl.height, pl.foot].filter(Boolean).join(" · ")}<div class="cmp-ovr" style="color:${statColor(pl.ovr)}">OVR ${pl.ovr}</div></div>`;
       const rows = Object.keys(A.stats).map(k => {
         const x = A.stats[k], y = B.stats[k];
         return `<div class="cmp-row"><div class="n ${x > y ? "win" : ""}" style="--c:${CMP_COLORS[0]};color:${statColor(x)}">${x}</div><div class="cmp-mid">${STAT_LABELS_KO[k] || k}</div><div class="n ${y > x ? "win" : ""}" style="--c:${CMP_COLORS[1]};color:${statColor(y)}">${y}</div></div>`;
@@ -3275,18 +3351,21 @@
         ${cmpRadar(A, B)}
         <div class="cmp-legend"><span><i style="background:${CMP_COLORS[0]}"></i>${A.name}</span><span><i style="background:${CMP_COLORS[1]}"></i>${B.name}</span></div>
         <div class="fx-box">${rows}<div style="text-align:center;font-weight:800;margin-top:6px">항목 우위 ${wa} : ${wb} · OVR ${A.ovr > B.ovr ? A.name + " 우세" : A.ovr < B.ovr ? B.name + " 우세" : "동률"}</div></div>
-        <div class="xi-hint">※ 능력치는 이 대시보드의 자체 수치(게임식 지표)이며 공식 기록이 아닙니다. 레이더 축은 30~100 기준. 숫자 테두리 = 해당 항목 우위</div>${statLegendHTML()}`;
+        <div class="xi-hint">※ 능력치는 이 대시보드의 자체 수치(게임식 지표)이며 공식 기록이 아닙니다. 레이더 축은 30~100 기준. 숫자 테두리 = 해당 항목 우위 · 상대팀 선수는 예상 라인업 기준 샘플</div>${statLegendHTML()}`;
     }
     ["korea", "arsenal"].forEach(side => {
       const pool = cmpPool();
       const aSel = document.getElementById(side + "CmpA");
-      aSel.innerHTML = ["korea", "arsenal"].map(sd => `<optgroup label="${sd === "korea" ? "국가대표" : "아스날"}">${pool.filter(p => p.side === sd).map(p => `<option value="${p.key}">${p.pos} ${p.name} (OVR ${p.ovr})</option>`).join("")}</optgroup>`).join("");
+      aSel.innerHTML = cmpOptgroups(pool);
       const top = (sd) => pool.filter(p => p.side === sd && !p.gk).sort((a, b) => b.ovr - a.ovr)[0];
-      aSel.value = top(side).key;
-      document.getElementById(side + "CmpB").innerHTML = `<option value="${top(side === "korea" ? "arsenal" : "korea").key}"></option>`;
-      document.getElementById(side + "CmpB").value = top(side === "korea" ? "arsenal" : "korea").key;
+      const defaultA = top(side) || pool.find(p => p.side === side) || pool[0];
+      const defaultB = top(side === "korea" ? "arsenal" : "korea") || pool.find(p => p.side !== defaultA.side && p.gk === defaultA.gk);
+      if (defaultA) aSel.value = defaultA.key;
+      const bSel = document.getElementById(side + "CmpB");
+      bSel.innerHTML = cmpOptgroups(pool.filter(p => p.gk === (defaultA && defaultA.gk) && p.key !== (defaultA && defaultA.key)));
+      if (defaultB) bSel.value = defaultB.key;
       aSel.addEventListener("change", () => cmpRender(side));
-      document.getElementById(side + "CmpB").addEventListener("change", () => cmpRender(side));
+      bSel.addEventListener("change", () => cmpRender(side));
       cmpRender(side);
     });
 
