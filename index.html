@@ -381,6 +381,69 @@
       display: none;
     }
 
+    .rank-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .rank-chip {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--border-card);
+      min-width: 110px;
+    }
+    .rank-chip .rk-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .rank-chip .rk-val {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+    .side-korea .rank-chip {
+      border-color: rgba(29, 78, 216, 0.35);
+    }
+    .side-arsenal .rank-chip {
+      border-color: rgba(185, 28, 28, 0.35);
+    }
+    .rank-chip .rk-sub {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    .card-toggle {
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 7px;
+      border: 1px solid var(--border-strong);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text-main);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .card-toggle:hover { background: #ffffff; }
+    .card > h2 {
+      gap: 8px;
+    }
+    .kpi-static {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      padding: 6px 2px 2px;
+      line-height: 1.4;
+    }
+
     .recent-box {
       padding: 10px 12px;
       border-radius: 8px;
@@ -1943,6 +2006,18 @@
       </div>
 
       <div class="record-bar" id="koreaRecordBar"></div>
+      <div class="rank-strip" id="koreaRankStrip" aria-label="국가대표 순위">
+        <div class="rank-chip">
+          <span class="rk-label">FIFA 랭킹</span>
+          <span class="rk-val">30위</span>
+          <span class="rk-sub">2026.11.18 · ▲2</span>
+        </div>
+        <div class="rank-chip">
+          <span class="rk-label">아시아 랭킹</span>
+          <span class="rk-val">4위</span>
+          <span class="rk-sub">AFC 46개국 중</span>
+        </div>
+      </div>
       <div class="bg-window" aria-hidden="true"></div>
 
       <div class="card">
@@ -1975,7 +2050,7 @@
       </div>
 
       <div class="card">
-        <h2>랭킹 · 최근 경기 골/어시스트</h2>
+        <h2><span>랭킹 · 최근 경기 골/어시스트</span></h2>
         <div class="recent-box">
           <div class="recent-title">직전 경기: 카타르 0–1 대한민국 (2026-11-17 23:00 KST, 도하 압둘라 빈 칼리파 스타디움)</div>
           <div class="recent-detail">⚽ 골: 오세훈 (43') · 🅰️ 어시스트: 송민규</div>
@@ -1983,15 +2058,15 @@
         <div class="kpi-grid">
           <div class="kpi-box">
             <span class="kpi-label">FIFA 랭킹</span>
-            <input type="text" id="koreaRank1" class="text-input" value="22위" />
+            <div class="kpi-static">30위 · 아시아 4위</div>
           </div>
           <div class="kpi-box">
             <span class="kpi-label">직전 경기 G/A</span>
-            <input type="text" id="koreaRank2" class="text-input" value="골 오세훈 · 도움 송민규" />
+            <div class="kpi-static">골 오세훈 · 도움 송민규</div>
           </div>
           <div class="kpi-box">
             <span class="kpi-label">다음 A매치</span>
-            <input type="text" id="koreaRank3" class="text-input" value="2027-12-26 vs 예멘" />
+            <div class="kpi-static">2027-12-26 vs 예멘</div>
           </div>
         </div>
         <ul id="koreaStatList" class="item-list"></ul>
@@ -2089,7 +2164,19 @@
         <span class="ratio-pill">RIGHT 50%</span>
       </div>
 
-      <div class="record-bar" id="arsenalRecordBar"></div>
+            <div class="record-bar" id="arsenalRecordBar"></div>
+      <div class="rank-strip" id="arsenalRankStrip" aria-label="아스날 순위">
+        <div class="rank-chip">
+          <span class="rk-label">프리미어리그</span>
+          <span class="rk-val">1위</span>
+          <span class="rk-sub">2026-27 · 28점 (11경기)</span>
+        </div>
+        <div class="rank-chip">
+          <span class="rk-label">챔피언스리그</span>
+          <span class="rk-val">5위</span>
+          <span class="rk-sub">리그 페이즈 · 11점 (5경기)</span>
+        </div>
+      </div>
       <div class="bg-window" aria-hidden="true"></div>
 
       <div class="card">
@@ -2139,23 +2226,23 @@
       </div>
 
       <div class="card">
-        <h2>순위 · 최근 경기 골/어시스트</h2>
+        <h2><span>순위 · 최근 경기 골/어시스트</span></h2>
         <div class="recent-box">
           <div class="recent-title">직전 경기: 아스날 1–1 보루시아 도르트문트 (2026-11-25 05:00 KST, UCL 리그 페이즈 5차전)</div>
           <div class="recent-detail">⚽ 골: 빅토르 요케레스 (아스날) · 바이어 (도르트문트) · 🅰️ 어시스트: 노니 마두에케 (아스날)</div>
         </div>
         <div class="kpi-grid">
           <div class="kpi-box">
-            <span class="kpi-label">리그 순위</span>
-            <input type="text" id="arsenalRank1" class="text-input" value="PL 2026-27 진행 중" />
+            <span class="kpi-label">리그 · 챔스</span>
+            <div class="kpi-static">PL 1위 · UCL 5위</div>
           </div>
           <div class="kpi-box">
             <span class="kpi-label">직전 경기 G/A</span>
-            <input type="text" id="arsenalRank2" class="text-input" value="골 요케레스 · 도움 마두에케" />
+            <div class="kpi-static">골 요케레스 · 도움 마두에케</div>
           </div>
           <div class="kpi-box">
             <span class="kpi-label">다음 경기</span>
-            <input type="text" id="arsenalRank3" class="text-input" value="2026-11-30 01:30 vs 맨시티 (PL)" />
+            <div class="kpi-static">2026-11-30 01:30 vs 맨시티 (PL)</div>
           </div>
         </div>
         <ul id="arsenalStatList" class="item-list"></ul>
@@ -2864,23 +2951,15 @@
 
     function renderStats(side) {
       const el = document.getElementById(`${side}StatList`);
-      el.innerHTML = state[side].stats.map((s, idx) => `
+      el.innerHTML = state[side].stats.map((s) => `
         <li class="list-row">
           <div><strong>${s.label}</strong></div>
           <div class="stat-badges">
             <span class="stat-pill">${s.w}승 ${s.d}무 ${s.l}패</span>
-            <button type="button" class="btn-mini" onclick="adjustStat('${side}', ${idx}, 'w')">+승</button>
-            <button type="button" class="btn-mini" onclick="adjustStat('${side}', ${idx}, 'd')">+무</button>
-            <button type="button" class="btn-mini" onclick="adjustStat('${side}', ${idx}, 'l')">+패</button>
           </div>
         </li>
       `).join("");
     }
-
-    window.adjustStat = function(side, idx, field) {
-      state[side].stats[idx][field] += 1;
-      renderStats(side);
-    };
 
     function renderMatches(side) {
       const filterBar = document.getElementById(`${side}FilterBar`);
@@ -3462,6 +3541,45 @@
       bSel.addEventListener("change", () => cmpRender(side));
       cmpRender(side);
     });
+
+    /* ===== 모든 카드 접기/펼치기 ===== */
+    (function initCardCollapse() {
+      document.querySelectorAll(".side-panel .card").forEach((card, i) => {
+        const h2 = card.querySelector(":scope > h2");
+        if (!h2) return;
+        // 이미 토글이 있으면 스킵 (선수단 등)
+        if (h2.querySelector(".card-toggle, #koreaSquadToggle, #arsenalSquadToggle, #koreaRookiesToggle")) return;
+
+        // h2 안 텍스트를 span으로 감싸 버튼과 정렬
+        if (![...h2.childNodes].some(n => n.nodeType === 1 && n.tagName === "SPAN")) {
+          const label = document.createElement("span");
+          while (h2.firstChild) label.appendChild(h2.firstChild);
+          h2.appendChild(label);
+        }
+
+        // body 래퍼
+        let body = card.querySelector(":scope > .card-body-collapse");
+        if (!body) {
+          body = document.createElement("div");
+          body.className = "card-body-collapse collapsible-body";
+          const nodes = [...card.childNodes].filter(n => n !== h2);
+          nodes.forEach(n => body.appendChild(n));
+          card.appendChild(body);
+        }
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "card-toggle";
+        btn.setAttribute("aria-expanded", "true");
+        btn.textContent = "▼ 접기";
+        btn.addEventListener("click", () => {
+          const collapsed = body.classList.toggle("collapsed");
+          btn.textContent = collapsed ? "▶ 펼치기" : "▼ 접기";
+          btn.setAttribute("aria-expanded", String(!collapsed));
+        });
+        h2.appendChild(btn);
+      });
+    })();
 
     // 박스별 색 구분
     (function colorCards() {
