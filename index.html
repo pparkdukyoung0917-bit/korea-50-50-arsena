@@ -138,6 +138,11 @@
     .k-crest { --k-img: var(--bg-korea-crest); }
     .k-logo  { --k-img: var(--bg-korea-logo); }
 
+    /* ===== 모바일: 팀 전환 탭 (한국 / 아스날) ===== */
+    .team-switch {
+      display: none;
+    }
+
     @media (max-width: 860px) {
       .split-page {
         grid-template-columns: 100%;
@@ -148,13 +153,66 @@
       }
       .side-korea {
         border-right: none;
-        border-bottom: 1px solid rgba(15, 23, 42, 0.14);
+        border-bottom: none;
       }
       .ratio-pill {
         display: none;
       }
       .arsenal-stage {
         background-position: 60% 50%;
+      }
+
+      .team-switch {
+        display: flex;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        gap: 0;
+        padding: 8px 10px;
+        background: rgba(255, 255, 255, 0.94);
+        -webkit-backdrop-filter: blur(10px) saturate(1.2);
+        backdrop-filter: blur(10px) saturate(1.2);
+        border-bottom: 1px solid rgba(15, 23, 42, 0.14);
+        box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
+      }
+      .team-switch-btn {
+        flex: 1;
+        font: inherit;
+        font-size: 15px;
+        font-weight: 800;
+        padding: 12px 10px;
+        border: 1px solid var(--border-strong);
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--text-sub);
+        cursor: pointer;
+        border-radius: 10px;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+      }
+      .team-switch-btn + .team-switch-btn {
+        margin-left: 8px;
+      }
+      .team-switch-btn.active.korea {
+        background: #1d4ed8;
+        border-color: #1e3a8a;
+        color: #ffffff;
+      }
+      .team-switch-btn.active.arsenal {
+        background: #b91c1c;
+        border-color: #991b1b;
+        color: #ffffff;
+      }
+      .team-switch-btn:not(.active):active {
+        background: #f1f5f9;
+      }
+
+      /* 선택되지 않은 패널 숨김 */
+      body.mob-show-korea .side-arsenal,
+      body.mob-show-arsenal .side-korea {
+        display: none !important;
+      }
+      body.mob-show-korea .side-korea,
+      body.mob-show-arsenal .side-arsenal {
+        display: flex !important;
       }
     }
 
@@ -1824,6 +1882,12 @@
 </head>
 <body>
 
+  <!-- 모바일 전용: 한국 / 아스날 전환 탭 -->
+  <nav class="team-switch" id="teamSwitch" aria-label="팀 선택">
+    <button type="button" class="team-switch-btn korea active" data-team="korea" aria-pressed="true">🇰🇷 국가대표</button>
+    <button type="button" class="team-switch-btn arsenal" data-team="arsenal" aria-pressed="false">🔴 아스날</button>
+  </nav>
+
   <main class="split-page">
     <!-- ==================== 왼쪽 50%: 국가대표 ==================== -->
     <section class="side-panel side-korea">
@@ -3379,6 +3443,31 @@
         if (hit) c.classList.add(hit[1]);
         else if (c.querySelector(".cal-grid")) c.classList.add("acc-cal");
       });
+    })();
+
+    /* ===== 모바일: 한국 / 아스날 탭 전환 ===== */
+    (function initTeamSwitch() {
+      const KEY = "arsenalkorea:mobTeam";
+      const btns = document.querySelectorAll(".team-switch-btn");
+      function apply(team) {
+        const t = team === "arsenal" ? "arsenal" : "korea";
+        document.body.classList.remove("mob-show-korea", "mob-show-arsenal");
+        document.body.classList.add("mob-show-" + t);
+        btns.forEach(b => {
+          const on = b.dataset.team === t;
+          b.classList.toggle("active", on);
+          b.setAttribute("aria-pressed", String(on));
+        });
+        try { localStorage.setItem(KEY, t); } catch (e) {}
+        // 전환 후 상단으로
+        if (window.matchMedia("(max-width: 860px)").matches) {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+      btns.forEach(b => b.addEventListener("click", () => apply(b.dataset.team)));
+      let saved = "korea";
+      try { saved = localStorage.getItem(KEY) || "korea"; } catch (e) {}
+      apply(saved);
     })();
   </script>
 </body>
