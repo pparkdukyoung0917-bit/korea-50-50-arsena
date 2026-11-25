@@ -255,6 +255,24 @@
       flex-shrink: 0;
     }
 
+    /* 국가대표 엠블럼: 페이지 내장 최신 로고 (두 번째 이미지) */
+    .logo-korea {
+      background: var(--bg-korea-logo) center / contain no-repeat;
+      background-color: transparent;
+    }
+    span.header-logo-img.logo-korea {
+      display: block;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+    span.team-switch-logo.logo-korea {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      display: block;
+    }
+
     .header-logo-fallback {
       display: none;
       align-items: center;
@@ -1896,7 +1914,7 @@
   <!-- 모바일 전용: 한국 / 아스날 전환 탭 -->
   <nav class="team-switch" id="teamSwitch" aria-label="팀 선택">
     <button type="button" class="team-switch-btn korea active" data-team="korea" aria-pressed="true">
-      <img class="team-switch-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Korea_Football_Association_logo.svg/120px-Korea_Football_Association_logo.svg.png" alt="" width="22" height="22" />
+      <span class="team-switch-logo logo-korea" aria-hidden="true"></span>
       국가대표
     </button>
     <button type="button" class="team-switch-btn arsenal" data-team="arsenal" aria-pressed="false">
@@ -1917,12 +1935,7 @@
 
       <div class="side-header">
         <h1 class="side-title">
-          <img
-            class="header-logo-img"
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Korea_Football_Association_logo.svg/120px-Korea_Football_Association_logo.svg.png"
-            alt="대한축구협회 로고"
-            onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"
-          />
+          <span class="header-logo-img logo-korea" role="img" aria-label="대한축구협회 로고"></span>
           <span class="header-logo-fallback">KFA</span>
           <span>국가대표</span>
         </h1>
